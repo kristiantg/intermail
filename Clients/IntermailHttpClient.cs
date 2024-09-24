@@ -12,11 +12,14 @@ public class IntermailHttpClient : IIntermailHttpClient
         _logger = logger;
     }
 
-    public async Task<HttpResponseMessage> AddLoyaltyPointsToCustomer(AddLoyaltyPointsRequest request)
+    public async Task<HttpResponseMessage> AddLoyaltyPointsToCustomer(AddLoyaltyPointsRequest request, int transactionId)
     {
         try
         {
             var response = await _httpClient.PostAsJsonAsync($"customer/{request.customerId}/loyaltypoints", request);
+            _logger.LogInformation("Request: {request}. Response: {response}. TransactionId: {transactionId}", request, response, transactionId);
+
+
             response.EnsureSuccessStatusCode();
 
             return response;

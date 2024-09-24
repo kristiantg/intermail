@@ -13,14 +13,16 @@ namespace intermail.Endpoints
             group.MapPost("", AddLoyaltyPoints).WithName(nameof(AddLoyaltyPoints));
         }
 
-        public static async Task<IResult> AddLoyaltyPoints(AddLoyaltyPointsRequest request, IIntermailHttpClient httpClient, ILoggerFactory loggerFactory)
+        public static async Task<IResult> AddLoyaltyPoints(int customerId, int amount, IIntermailHttpClient httpClient, ILoggerFactory loggerFactory)
         {
             ILogger logger = loggerFactory.CreateLogger("AddLoyaltyPointsEndpoint");
-            logger.LogInformation("Received request to add loyalty points: {@Request}", request);
+            logger.LogInformation("Received request to add loyalty points customerId: {@customerId} with amount: {@amount}", customerId, amount);
+
+            var request = new AddLoyaltyPointsRequest(customerId, amount);
 
             try
             {
-                var response = await httpClient.AddLoyaltyPointsToCustomer(request);
+                var response = await httpClient.AddLoyaltyPointsToCustomer(request, Thread.CurrentThread.ManagedThreadId);
                 var responseContent = await response.Content.ReadAsStringAsync(); 
 
                 return Results.Ok(responseContent); 
